@@ -17,13 +17,13 @@ class BatchStudyApplication(
     private val printJob: Job
 ) {
 
-    @Bean
-    fun runner() = ApplicationRunner {
-        jobLauncher.run(
-            printJob, JobParametersBuilder()
-                .toJobParameters()
-        )
-    }
+//    @Bean
+//    fun runner() = ApplicationRunner {
+//        jobLauncher.run(
+//            printJob, JobParametersBuilder()
+//                .toJobParameters()
+//        )
+//    }
 }
 
 fun main(args: Array<String>) {

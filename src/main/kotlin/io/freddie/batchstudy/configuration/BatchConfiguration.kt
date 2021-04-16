@@ -1,12 +1,16 @@
 package io.freddie.batchstudy.configuration
 
+import io.freddie.batchstudy.listener.ElapsedTimeListener
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
+import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
+import org.springframework.batch.core.listener.JobExecutionListenerSupport
 import org.springframework.batch.item.ItemProcessor
 import org.springframework.batch.item.ItemWriter
 import org.springframework.batch.item.support.ListItemReader
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -16,24 +20,26 @@ class BatchConfiguration(
     private val stepBuilderFactory: StepBuilderFactory
 ) {
     @Bean
-    fun printJob(): Job {
+    fun printJob(alphabetPrintStep: Step): Job {
         return jobBuilderFactory.get("print-job")
-            .start(alphabetPrintStep())
+            .start(alphabetPrintStep)
+            .listener(elapsedTimeListener())
             .build()
     }
 
     @Bean
-    fun alphabetPrintStep(): Step {
+    @JobScope
+    fun alphabetPrintStep(@Value("#{jobParameters['alphabets']}") alphabets: String): Step {
         val chuckSize = 3
         return stepBuilderFactory.get("alphabet-print-step")
             .chunk<String, String>(chuckSize)
-            .reader(alphabetReader())
+            .reader(alphabetReader(alphabets))
             .processor(duplicateItemProcessor())
             .writer(printItemWriter())
             .build()
     }
 
-    fun alphabetReader() = ListItemReader(listOf("A", "B", "C", "D", "E", "F"))
+    fun alphabetReader(alphabets: String) = ListItemReader(alphabets.split(","))
 
     fun duplicateItemProcessor() = ItemProcessor<String, String> { string ->
         "$string$string"
@@ -42,4 +48,6 @@ class BatchConfiguration(
     fun printItemWriter() = ItemWriter<String> { list ->
         println(list.joinToString())
     }
+
+    fun elapsedTimeListener() = ElapsedTimeListener()
 }
