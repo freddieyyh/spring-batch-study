@@ -6,6 +6,7 @@ import org.springframework.batch.core.Step
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.JobScope
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
+import org.springframework.batch.core.launch.support.RunIdIncrementer
 import org.springframework.batch.core.listener.JobExecutionListenerSupport
 import org.springframework.batch.item.ItemProcessor
 import org.springframework.batch.item.ItemWriter
@@ -22,6 +23,7 @@ class BatchConfiguration(
     @Bean
     fun printJob(alphabetPrintStep: Step): Job {
         return jobBuilderFactory.get("print-job")
+            .incrementer(RunIdIncrementer())
             .start(alphabetPrintStep)
             .listener(elapsedTimeListener())
             .build()
