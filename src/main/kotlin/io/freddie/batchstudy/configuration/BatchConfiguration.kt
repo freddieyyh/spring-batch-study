@@ -4,6 +4,7 @@ import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
+import org.springframework.batch.item.ItemProcessor
 import org.springframework.batch.item.ItemWriter
 import org.springframework.batch.item.support.ListItemReader
 import org.springframework.context.annotation.Bean
@@ -27,11 +28,16 @@ class BatchConfiguration(
         return stepBuilderFactory.get("alphabet-print-step")
             .chunk<String, String>(chuckSize)
             .reader(alphabetReader())
+            .processor(duplicateItemProcessor())
             .writer(printItemWriter())
             .build()
     }
 
     fun alphabetReader() = ListItemReader(listOf("A", "B", "C", "D", "E", "F"))
+
+    fun duplicateItemProcessor() = ItemProcessor<String, String> { string ->
+        "$string$string"
+    }
 
     fun printItemWriter() = ItemWriter<String> { list ->
         println(list.joinToString())
