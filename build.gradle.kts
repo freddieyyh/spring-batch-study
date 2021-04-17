@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-//    implementation("org.springframework.cloud:spring-cloud-starter-task")
+    implementation("org.springframework.cloud:spring-cloud-starter-task:2.3.0")
     implementation("org.springframework.boot:spring-boot-starter-batch")
 //    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
